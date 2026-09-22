@@ -68,12 +68,21 @@ finished. Use separate new output directories for subsequent runs.
 
 ### Remaining Browser Checks
 
+A subsequent pair of user screenshots shows full-width layout after refresh and
+contraction after selecting the node. Installed frontend source identifies the
+side panel's `WidgetLegacy.vue` assigning its width to the shared widget instance.
+The viewer now uses `hideInPanel: true`, as core preview widgets do, so selection
+does not mount that second renderer. The user confirmed the fix works and that
+slice scrubbing is very good, then requested a commit. Typecheck, all 16 frontend
+tests, and rebuild pass (16.52 kB bundle). This establishes user acceptance of the
+selection-width fix and scrubbing, not completion of every check listed below.
+
 Follow-up: a user screenshot shows the viewer rendering in the loader, but at a
 narrow width inside an enlarged node. The frontend now synchronizes widget width
 through the host's `afterResize` hook and explicitly fills its CSS container.
 C/W fields also have descriptive HU tooltips. Typecheck, all 16 frontend tests,
-and rebuild pass (16.41 kB bundle). The resized result still needs browser
-confirmation; the screenshot establishes initial rendering, not final acceptance.
+and rebuild passed (16.41 kB bundle). The later selection-width fix and user
+confirmation above supersede that initial resizing check.
 
 1. Restart your own host and refresh its page. Import the unchanged
    `example_workflows/dicom_to_mesh.json`, then Run. Confirm the loader canvas,

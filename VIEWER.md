@@ -15,6 +15,9 @@ component mounting uses internal `ComponentWidgetImpl`, `addWidget`, and fronten
 store imports. The supported `addDOMWidget` route avoids private bundles and a
 second Vue runtime. `nodeCreated`, chained `onExecuted`/`onConfigure`/`onRemoved`,
 DOM widget minimum height, and ResizeObserver cover mounting and cleanup.
+`hideInPanel` keeps the stateful viewer on its node: the installed side panel's
+legacy widget renderer otherwise writes its narrower width onto the same widget
+when the node is selected. This follows the host's own preview-widget convention.
 Both the widget's `serialize` flag and option are false. Only sanitized
 `dicom_viewer` settings go into node properties; no pixels or handles do.
 

@@ -9,7 +9,7 @@ export interface HostNode {
   size: [number, number];
   setSize(size: [number, number]): void;
   addDOMWidget(name: string, type: string, root: HTMLElement, options: {
-    serialize: boolean; getMinHeight(): number; hideOnZoom: boolean;
+    serialize: boolean; getMinHeight(): number; hideOnZoom: boolean; hideInPanel: boolean;
     afterResize(this: { width?: number }, node: HostNode): void;
   }): { serialize: boolean; width?: number };
   onExecuted?: (output: { dicom_volume?: Descriptor[]; text?: string[] }) => void;
@@ -25,7 +25,8 @@ app.registerExtension({
     });
     const widget = node.addDOMWidget("dicom_slice_viewer", "dicom_slice_viewer", viewer.root,
       {
-        serialize: false, getMinHeight: () => 370, hideOnZoom: false,
+        // The side panel's legacy renderer otherwise overwrites this widget's width.
+        serialize: false, getMinHeight: () => 370, hideOnZoom: false, hideInPanel: true,
         afterResize(node) { this.width = node.size[0]; },
       });
     widget.serialize = false;

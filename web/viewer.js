@@ -49,7 +49,7 @@ function L(s) {
 function B(s, t) {
   return Math.max(0, Math.min(t - 1, Math.round(s)));
 }
-function W(s, t, e) {
+function P(s, t, e) {
   if (!x(t, e)) throw new Error("Window width must be positive and finite.");
   return Math.round(Math.max(0, Math.min(1, (s - t) / e + 0.5)) * 255);
 }
@@ -57,7 +57,7 @@ function M(s, t, e) {
   const n = s.width * s.spacing[0], o = s.height * s.spacing[1], r = Math.min(t / n, e / o);
   return { x: (t - n * r) / 2, y: (e - o * r) / 2, width: n * r, height: o * r };
 }
-function $(s, t, e, n, o) {
+function W(s, t, e, n, o) {
   const r = M(s, t, e);
   if (r.width <= 0 || r.height <= 0 || n < r.x || o < r.y || n >= r.x + r.width || o >= r.y + r.height) return null;
   const a = Math.floor((n - r.x) * s.width / r.width), d = Math.floor((o - r.y) * s.height / r.height);
@@ -67,7 +67,7 @@ function b(s) {
   const t = [["L", "R"], ["P", "A"], ["S", "I"]];
   return s.map((e, n) => ({ v: e, i: n })).filter(({ v: e }) => Math.abs(e) > 0.01).sort((e, n) => Math.abs(n.v) - Math.abs(e.v)).map(({ v: e, i: n }) => t[n][e < 0 ? 1 : 0]).join("");
 }
-class P {
+class $ {
   constructor(t = 12, e = 32 * 1024 * 1024) {
     this.maxCount = t, this.maxBytes = e;
   }
@@ -92,18 +92,18 @@ class P {
     this.entries.clear();
   }
 }
-class N extends Error {
+class I extends Error {
   constructor(t, e) {
     super(e), this.status = t;
   }
   status;
 }
-class H {
+class N {
   constructor(t) {
     this.fetch = t;
   }
   fetch;
-  cache = new P();
+  cache = new $();
   generation = 0;
   controller;
   cancel() {
@@ -120,7 +120,7 @@ class H {
     try {
       const d = await this.fetch(`/dicom-volume/slice/${r}`, { signal: this.controller.signal, cache: "no-store" });
       if (o !== this.generation) return;
-      if (!d.ok) throw new N(d.status, d.status === 410 ? "Volume expired. Run the graph again." : `Slice request failed (${d.status}).`);
+      if (!d.ok) throw new I(d.status, d.status === 410 ? "Volume expired. Run the graph again." : `Slice request failed (${d.status}).`);
       const v = await d.arrayBuffer();
       if (o !== this.generation) return;
       const g = t.planes[e];
@@ -134,16 +134,16 @@ class H {
     }
   }
 }
-const I = ".dicom-viewer{box-sizing:border-box;width:100%;height:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(150px,1fr) auto auto;gap:7px;padding:8px;color:var(--input-text, #ddd);background:var(--comfy-menu-bg, #252525);font:12px sans-serif;letter-spacing:0;overflow:hidden}.dicom-viewer *{box-sizing:border-box;min-width:0}.dicom-viewer .dv-row{display:flex;align-items:center;gap:5px}.dicom-viewer .dv-planes{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.dicom-viewer button,.dicom-viewer select,.dicom-viewer input[type=number]{color:inherit;background:var(--comfy-input-bg, #333);border:1px solid var(--border-color, #666);border-radius:3px;height:27px;font:inherit}.dicom-viewer button{cursor:pointer;padding:3px 5px}.dicom-viewer button[aria-pressed=true]{color:var(--comfy-menu-bg, #222);background:var(--input-text, #ddd)}.dicom-viewer button:focus-visible,.dicom-viewer input:focus-visible,.dicom-viewer select:focus-visible{outline:2px solid var(--p-primary-color, #26a69a);outline-offset:1px}.dicom-viewer .dv-icon{flex:0 0 27px;width:27px;display:grid;place-items:center}.dicom-viewer label{display:flex;align-items:center;gap:4px;flex:1}.dicom-viewer input[type=number]{width:100%;padding:3px}.dicom-viewer input[type=range]{flex:1;width:0}.dicom-viewer select{width:93px}.dicom-viewer .dv-stage{position:relative;min-height:150px;background:#080808;overflow:hidden}.dicom-viewer canvas{position:absolute;width:100%;height:100%;display:block;touch-action:none}.dicom-viewer .dv-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;color:#eee;text-align:center;pointer-events:none}.dicom-viewer .dv-status:empty{display:none}.dicom-viewer .dv-orientation{font-size:11px;overflow-wrap:anywhere}.dicom-viewer .dv-count{flex:0 0 72px;text-align:right;font-variant-numeric:tabular-nums}.dicom-viewer .dv-hu{margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap}.dicom-viewer .dv-summary{overflow:auto;max-height:36px;font-size:10px;overflow-wrap:anywhere}";
+const H = ".dicom-viewer{box-sizing:border-box;width:100%;height:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(150px,1fr) auto auto;gap:7px;padding:8px;color:var(--input-text, #ddd);background:var(--comfy-menu-bg, #252525);font:12px sans-serif;letter-spacing:0;overflow:hidden}.dicom-viewer *{box-sizing:border-box;min-width:0}.dicom-viewer .dv-row{display:flex;align-items:center;gap:5px}.dicom-viewer .dv-planes{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.dicom-viewer button,.dicom-viewer select,.dicom-viewer input[type=number]{color:inherit;background:var(--comfy-input-bg, #333);border:1px solid var(--border-color, #666);border-radius:3px;height:27px;font:inherit}.dicom-viewer button{cursor:pointer;padding:3px 5px}.dicom-viewer button[aria-pressed=true]{color:var(--comfy-menu-bg, #222);background:var(--input-text, #ddd)}.dicom-viewer button:focus-visible,.dicom-viewer input:focus-visible,.dicom-viewer select:focus-visible{outline:2px solid var(--p-primary-color, #26a69a);outline-offset:1px}.dicom-viewer .dv-icon{flex:0 0 27px;width:27px;display:grid;place-items:center}.dicom-viewer label{display:flex;align-items:center;gap:4px;flex:1}.dicom-viewer input[type=number]{width:100%;padding:3px}.dicom-viewer input[type=range]{flex:1;width:0}.dicom-viewer select{width:93px}.dicom-viewer .dv-stage{position:relative;min-height:150px;background:#080808;overflow:hidden}.dicom-viewer canvas{position:absolute;width:100%;height:100%;display:block;touch-action:none}.dicom-viewer .dv-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;color:#eee;text-align:center;pointer-events:none}.dicom-viewer .dv-status:empty{display:none}.dicom-viewer .dv-orientation{font-size:11px;overflow-wrap:anywhere}.dicom-viewer .dv-count{flex:0 0 72px;text-align:right;font-variant-numeric:tabular-nums}.dicom-viewer .dv-hu{margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap}.dicom-viewer .dv-summary{overflow:auto;max-height:36px;font-size:10px;overflow-wrap:anywhere}";
 function c(s, t = "", e = "") {
   const n = document.createElement(s);
   return n.className = t, n.textContent = e, n;
 }
 class q {
   constructor(t, e) {
-    if (this.persist = e, this.requests = new H(t), !document.getElementById("dicom-volume-style")) {
+    if (this.persist = e, this.requests = new N(t), !document.getElementById("dicom-volume-style")) {
       const i = c("style");
-      i.id = "dicom-volume-style", i.textContent = I, document.head.append(i);
+      i.id = "dicom-volume-style", i.textContent = H, document.head.append(i);
     }
     const n = c("div", "dv-planes");
     for (const i of C) {
@@ -194,7 +194,7 @@ class q {
       (i.button === 2 || i.shiftKey) && (i.preventDefault(), this.canvas.setPointerCapture(i.pointerId), p = { x: i.clientX, y: i.clientY, center: this.settings.center, width: this.settings.width });
     }, { signal: this.events.signal }), this.canvas.addEventListener("pointermove", (i) => {
       p && (this.settings.center = p.center + (i.clientY - p.y) * 2, this.settings.width = Math.max(1e-3, p.width + (i.clientX - p.x) * 4), this.save(), this.syncControls(), this.renderPixels());
-      const h = this.canvas.getBoundingClientRect(), u = this.descriptor?.planes[this.settings.axis], l = u && this.pixels && $(u, h.width, h.height, i.clientX - h.left, i.clientY - h.top);
+      const h = this.canvas.getBoundingClientRect(), u = this.descriptor?.planes[this.settings.axis], l = u && this.pixels && W(u, h.width, h.height, i.clientX - h.left, i.clientY - h.top);
       this.hu.textContent = l && u ? `HU: ${this.pixels[l.row * u.width + l.column]}` : "HU: --";
     }, { signal: this.events.signal });
     for (const i of ["pointerup", "pointercancel", "lostpointercapture"]) this.on(this.canvas, i, () => {
@@ -272,7 +272,7 @@ class q {
     this.source.width = t.width, this.source.height = t.height;
     const e = this.source.getContext("2d"), n = e.createImageData(t.width, t.height);
     for (let o = 0; o < this.pixels.length; o++) {
-      const r = W(this.pixels[o], this.settings.center, this.settings.width);
+      const r = P(this.pixels[o], this.settings.center, this.settings.width);
       n.data[o * 4] = n.data[o * 4 + 1] = n.data[o * 4 + 2] = r, n.data[o * 4 + 3] = 255;
     }
     e.putImageData(n, 0, 0), this.draw();
@@ -300,9 +300,11 @@ E.registerExtension({
       "dicom_slice_viewer",
       t.root,
       {
+        // The side panel's legacy renderer otherwise overwrites this widget's width.
         serialize: !1,
         getMinHeight: () => 370,
         hideOnZoom: !1,
+        hideInPanel: !0,
         afterResize(a) {
           this.width = a.size[0];
         }
