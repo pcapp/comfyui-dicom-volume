@@ -5,7 +5,7 @@ description = "Load conventional CT DICOM series into ComfyUI volumes."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.12"
-dependencies = ["numpy>=2.2", "SimpleITK>=2.5"]
+dependencies = ["numpy>=2.2", "SimpleITK>=2.5", "scikit-image>=0.26"]
 
 [dependency-groups]
 dev = ["pytest>=8.3"]

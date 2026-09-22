@@ -1,0 +1,17 @@
+{
+  "1": {
+    "class_type": "DICOMVolume_Load",
+    "inputs": {"directory": "tcia-med-lymph-073"},
+    "_meta": {"title": "Load DICOM Volume"}
+  },
+  "2": {
+    "class_type": "DICOMVolume_ToMesh",
+    "inputs": {"volume": ["1", 0], "threshold_hu": 200.0, "step_size": 2},
+    "_meta": {"title": "Volume to Mesh"}
+  },
+  "3": {
+    "class_type": "SaveGLB",
+    "inputs": {"mesh": ["2", 0], "filename_prefix": "dicom/volume"},
+    "_meta": {"title": "Save 3D Model"}
+  }
+}

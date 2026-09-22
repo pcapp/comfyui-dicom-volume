@@ -1,109 +1,122 @@
 # DICOM Volume
 
-`Load DICOM Volume` loads a conventional CT series from ComfyUI's input directory
-into one `VOLUME` output. It runs on its own and reports the selected series,
-slice count, shape, spacing, dtype and HU range in the host log. It also returns
-the supported V3 text-preview payload. **Not for clinical use.**
+Load conventional CT and extract an HU isosurface in ComfyUI:
+`Load DICOM Volume -> Volume to Mesh -> Save 3D Model (SaveGLB)`.
+The core save node writes a GLB and supplies its existing interactive preview.
+**Not for clinical use.**
 
 ## Setup
 
-The extension repo owns the source; ComfyUI is the host application. A symlink
-lets the host discover this source without copying it into the ComfyUI repo.
-The extension's `.venv` is for unit tests. ComfyUI uses the interpreter that
-launches `main.py`, so it needs the runtime requirements separately.
-
-Work through these checkpoints with observations after each one. Commands below
-use Peter's local paths; verify the host interpreter before installing anything.
-
-1. In `/Users/peter/repos/comfyui-dicom-volume`, run
-   `git status --short --branch`. Peter's confirmed branch is `feat/load-slices`;
-   keep it and preserve existing changes.
-2. Inspect the host with `git -C /Users/peter/repos/ComfyUI status --short --branch`
-   and `git -C /Users/peter/repos/ComfyUI rev-parse HEAD`. Do not pull or discard
-   modifications. Inspect the existing environment, then confirm it with:
-   `/Users/peter/repos/ComfyUI/.venv/bin/python -c 'import sys; from importlib.metadata import version; print(sys.executable); print(sys.version); print("frontend", version("comfyui-frontend-package"))'`.
-   Expect the host `.venv` path and frontend version. If it fails, stop here and
-   inspect that environment rather than replacing it.
-3. Check `ls -ld /Users/peter/repos/ComfyUI/custom_nodes/comfyui-dicom-volume`.
-   If absent, run
-   `ln -s /Users/peter/repos/comfyui-dicom-volume /Users/peter/repos/ComfyUI/custom_nodes/comfyui-dicom-volume`.
-   Confirm using `readlink /Users/peter/repos/ComfyUI/custom_nodes/comfyui-dicom-volume`;
-   expect `/Users/peter/repos/comfyui-dicom-volume`. If already present, inspect it;
-   never overwrite it. Do not commit this integration link to ComfyUI core.
-4. From `/Users/peter/repos/ComfyUI`, install into the verified host interpreter:
-   `uv pip install --python /Users/peter/repos/ComfyUI/.venv/bin/python -r /Users/peter/repos/comfyui-dicom-volume/requirements.txt`.
-   This installs NumPy and SimpleITK into the process that runs the node. Do not
-   use `uv sync` on this shared host environment or install `comfy_api` from PyPI.
-5. Check port 8188 with `lsof -nP -iTCP:8188 -sTCP:LISTEN`. If unused, launch from
-   `/Users/peter/repos/ComfyUI`:
-   `/Users/peter/repos/ComfyUI/.venv/bin/python main.py --cpu --disable-api-nodes --listen 127.0.0.1 --port 8188`.
-   Expect `http://127.0.0.1:8188` and no extension import error. If occupied, pick
-   another free port and use its URL. Do not stop another server. CPU is sufficient;
-   no diffusion models are needed. Python edits require a host restart, not just
-   a browser refresh. Search for `Load DICOM Volume` after launch.
-
-## Public Sample
-
-Read [SAMPLE_DATA.md](SAMPLE_DATA.md) before fetching. The explicitly invoked
-script downloads only CT Lymph Nodes case `MED_LYMPH_073`, series
-`61.7.338133024060269626651520600539598241004`: 148 images, approximately 78 MB of
-source DICOM, to `/Users/peter/repos/ComfyUI/input/tcia-med-lymph-073`.
-The ZIP transfer size is recorded after download. Data license: CC BY 3.0.
-
-From `/Users/peter/repos/comfyui-dicom-volume`, after unit-test environment setup:
+Use an existing ComfyUI checkout and its verified interpreter. Preserve local
+changes; no host upgrade or environment replacement is required. From this
+extension checkout:
 
 ```sh
-/Users/peter/repos/comfyui-dicom-volume/.venv/bin/python scripts/fetch_sample.py
+EXTENSION_ROOT="$PWD"
+COMFY_ROOT="/path/to/ComfyUI"
+git status --short --branch
+git -C "$COMFY_ROOT" status --short --branch
+"$COMFY_ROOT/.venv/bin/python" -c 'import sys; print(sys.executable, sys.version)'
 ```
 
-Expect 148 files, verified ZIP CRCs, and `provenance.json` with local SHA256 values.
-Existing data is never overwritten. If download verification fails, inspect the
-error before retrying. Suitability is pending until decoding and geometry checks
-pass; public metadata alone is insufficient. The node never downloads anything.
+Link this checkout into the host's `custom_nodes` only if no entry already exists:
 
-## Verification
+```sh
+ln -s "$EXTENSION_ROOT" "$COMFY_ROOT/custom_nodes/comfyui-dicom-volume"
+uv pip install --python "$COMFY_ROOT/.venv/bin/python" -r requirements.txt
+```
 
-For the isolated extension test environment, run `uv sync --locked` in this repo,
-then `/Users/peter/repos/comfyui-dicom-volume/.venv/bin/python -m pytest -q`.
-Tests are offline and generate small synthetic DICOM files with SimpleITK.
+Runtime requirements are NumPy, SimpleITK and scikit-image. PyTorch and `comfy_api`
+come from ComfyUI; do not install a PyPI package named `comfy_api`. Do not run
+`uv sync` against the shared host environment. The extension's separate test
+environment is managed with `uv sync --locked`.
 
-Follow [VERIFICATION.md](VERIFICATION.md) for the one-node workflow, sample report,
-PNG inspection, restart check, and separate human acceptance record.
+Restart your own host after Python changes. CPU execution is sufficient and no
+diffusion models are required. For a new host, select a free port, then run:
 
-## VOLUME Contract
+```sh
+cd "$COMFY_ROOT"
+"$COMFY_ROOT/.venv/bin/python" main.py --cpu --disable-api-nodes --listen 127.0.0.1 --port 8188
+```
 
-`loader.Volume` holds:
+Do not stop an unrelated process. Open the URL printed by the host.
+
+## Run the Workflow
+
+1. Read [SAMPLE_DATA.md](SAMPLE_DATA.md) for the public sample, its explicit
+   downloader, TCIA citation, CC BY 3.0 license and usage policy. Put a supported
+   series beneath the host's input directory; refresh the browser after adding
+   folders. The nodes never download data.
+2. Open or drag `example_workflows/dicom_to_mesh.json` onto the ComfyUI canvas.
+   This is API-format JSON supported by the installed frontend. Select the
+   input folder in `Load DICOM Volume`; the example uses `tcia-med-lymph-073`.
+3. Run with `threshold_hu=200` and `step_size=2`. SaveGLB appears as
+   `Save 3D Model` and displays the saved mesh in its embedded preview. Files
+   default to `output/dicom/volume_00001_.glb`, with an incrementing counter.
+   A separate Preview3D node is unnecessary and does not accept MESH directly.
+
+The threshold acts on original HU values. A higher threshold changes the surface;
+this is not anatomical segmentation. Step 1 samples every voxel; larger integer
+steps run faster and may miss thin structures. Cropped anatomy can produce open
+surfaces. Marching cubes may skip a trailing voxel interval when its length is
+not divisible by the step. Nothing is padded, capped, cropped, smoothed,
+decimated or resampled by the extension.
+No surface means adjusting the threshold or reducing the step, not fabricating
+geometry. The volume and mesh must fit in RAM.
+
+Retain [sample attribution and policy](SAMPLE_DATA.md) with sample-derived meshes,
+images and screenshots. Generated data and reports belong under ignored
+`artifacts/` (or the host output directory), never in commits. DICOM metadata and
+derived geometry can be identifying; public availability is not a privacy audit.
+
+## Coordinates and Units
+
+`loader.Volume` is unchanged:
 
 | Field | Meaning |
 | --- | --- |
-| `voxels` | NumPy `float32` HU array, indexed `(z, y, x)` |
-| `spacing` | `(x, y, z)` voxel spacing in millimetres |
-| `origin` | Physical position of voxel `(0, 0, 0)` in DICOM LPS mm |
-| `direction` | Row-major 3x3 matrix; columns give physical x/y/z axis directions |
-| `series_uid` | Selected DICOM SeriesInstanceUID |
-| `source_files` | Selected files in GDCM spatial order |
+| `voxels` | NumPy float32 HU, indexed `(z,y,x)` |
+| `spacing` | `(x,y,z)` voxel spacing in mm |
+| `origin` | Voxel `(0,0,0)` position in DICOM LPS mm |
+| `direction` | Row-major 3x3 matrix; columns give physical x/y/z directions |
+| `series_uid` | Selected series UID |
+| `source_files` | Files in GDCM spatial order |
 
-For array index `[z, y, x]`, physical position is
-`origin + direction.reshape(3, 3) @ ([x, y, z] * spacing)`.
-Future meshing must account for the axis-order difference and retain this affine.
-GDCM applies slope/intercept once; the output is explicitly float32. No cropping,
-windowing, normalization, resampling or reorientation is applied to the volume.
+Physical position is `origin + direction @ ([x,y,z] * spacing)`.
+Meshing explicitly permutes marching-cubes `(z,y,x)` coordinates and applies this
+affine once. Winding is reversed when that transform reflects coordinates;
+gradient normals use its inverse transpose and are renormalized.
 
-## Limits
+The MESH adapter outputs `(X,Y,Z)=(-L,S,P)/1000`: right-handed metres, superior up,
+anterior toward negative Z. The rotation preserves handedness. Origin is retained;
+there is no centering or dimension normalization. Inverse mapping to DICOM mm is
+`(L,P,S)=1000*(-X,Z,Y)`. The core exporter writes positions unchanged.
+[glTF specifies metres and a right-handed Y-up coordinate system](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#coordinate-system-and-units).
+The host viewer may frame the object for display; the saved GLB retains physical
+coordinates. Use core SaveGLB for this coordinate-preserving export.
 
-The largest eligible CT series wins; ties use ascending SeriesInstanceUID.
-Localizer/scout images and other modalities are excluded. Files must stay within
-the configured input root, including symlink targets. Discovery reads headers
-without decoding pixels and recognizes extensionless DICOM files. Directory
-symlinks are not traversed during discovery. A file-stat manifest invalidates
-ComfyUI's normal cache on additions, removals, replacements or metadata changes.
-There is no additional global volume cache.
+## Verification and Limits
 
-This milestone supports scalar conventional single-frame CT stacks with at least
-two slices. Enhanced/multiframe CT, irregular positions, duplicate positions,
-changing orientation/spacing, and gantry shear need a suitable exported regular
-reconstruction. Consistent oblique stacks are supported. The complete volume
-must fit in RAM. Refresh the browser after adding new input folders.
-Meshing and an interactive slice viewer are subsequent work.
+From the extension checkout:
 
-Code: [MIT](LICENSE). Sample data has its own attribution and license, below.
+```sh
+uv sync --locked
+.venv/bin/python -m pytest -q --tb=short
+```
+
+See [VERIFICATION.md](VERIFICATION.md) for actual evidence, the host smoke command,
+mesh inspection and restart acceptance. `example_workflows/load_dicom_volume.json`
+still runs the loader alone and displays its geometry/HU summary.
+
+The loader selects the largest eligible conventional single-frame CT series,
+breaking ties by ascending UID. It excludes localizers and other modalities,
+checks containment (including symlinks), recognizes extensionless DICOM, validates
+regular geometry and retains oblique orientation and fractional HU. GDCM applies
+slope/intercept once. A file-stat fingerprint invalidates ComfyUI's own cache;
+there is no duplicate volume cache.
+
+At least two slices are required. Enhanced/multiframe CT, irregular/duplicate
+positions, varying orientation or spacing, and gantry shear require an appropriate
+regular reconstruction. An interactive slice viewer is future work.
+
+Code: [MIT](LICENSE). Sample data has its own attribution and license.

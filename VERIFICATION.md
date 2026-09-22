@@ -1,5 +1,71 @@
 # Manual Integration and Acceptance
 
+## Part Two: Mesh Evidence, 2026-09-22
+
+Automated mesh checks pass. The user supplied screenshots of the connected
+three-node workflow and rendered mesh, explicitly accepted the milestone
+("From an acceptance test this is great. It works."), and subsequently reported
+that the observed step-size behavior makes sense. Exact compared step values
+were not recorded. User-observed saved-workflow restart remains unreported;
+automated cold-restart evidence is recorded separately below.
+
+| Check | Actual evidence |
+| --- | --- |
+| Offline suite | `.venv/bin/python -m pytest -q --tb=short`: 54 passed, including 24 meshing cases. scikit-image emits 58 NumPy 2.5 deprecation warnings in the Python 3.14.2 extension environment. |
+| Host | Revision `95539f56344958339e39b7582a476267d489b0ee`, Python 3.13.13, PyTorch 2.11.0, NumPy 2.4.4, scikit-image 0.26.0, frontend **1.53.6** (rechecked; differs from the earlier record below). |
+| Host isolation | Separate CPU host on port 8189 with output/temp/user directories under ignored `artifacts/mesh-verification`; only this extension whitelisted; metadata disabled. Existing port 8188 process untouched. |
+| Synthetic host adapter/export | Real host MESH: float32 vertices/normals `(1,N,3)`, int64 faces `(1,F,3)`. Core exporter round-trip: 102 vertices, 200 triangles; exact position/index equality; outward winding, unit normals and physical dimensions pass. |
+| Actual queued workflow | `Load DICOM Volume -> Volume to Mesh -> SaveGLB`, 200 HU, step 2: host status `success`; valid `3d` filename/subfolder/type preview payload; GLB fetched through host `/view`. |
+| Sample geometry | 224,036 vertices, 447,879 triangles, 10,752,552-byte GLB. Dimensions `(X,Y,Z)` approximately `(0.42290145, 0.73000002, 0.27724800)` m. Binary positions and indices exactly match the separately run mesher; normals match and are finite/unit length. |
+| Physical bounds | LPS mm minimum `(-217.86009, -264.70923, -563.5)`, maximum `(205.04134, 12.53877, 166.5)`. Stored GLB bounds match `(-L,S,P)/1000`, with no node transforms or centering. |
+| Local artifacts | `artifacts/mesh-verification/check-3/report.json`, `sample.glb`, and accompanying `ATTRIBUTION.md`. Generated data is ignored and untracked. |
+| Cold restart | Stopped/relaunched the isolated host and reran `verify_mesh.py` into `check-4`: all checks passed again. `cmp` confirms byte-identical GLBs; SHA256 `6b2bfa3b227c817b54efa1c752c878fdd2955fa98a3d6a8c8c722973f8b3840d`. The temporary server was then stopped; this is automated restart evidence, not a user observation. |
+| Preview and acceptance | User screenshots show the connected workflow at 200 HU, step 2 and a rendered mesh in Save 3D Model; a later close-up shows additional inspection. User explicitly accepted the working mesh milestone. Agent browser automation was blocked; exact workflow import and save/reopen steps were not reported. |
+
+The real sample initially exposed three unused marching-cubes vertices whose
+area-weighted normals were zero after degenerate-face removal. The final code
+uses marching-cubes gradient normals, transformed by the inverse transpose of
+the physical affine. The final sample check passes for every vertex. No surface
+vertices or faces are removed by extension code. Closed synthetic shapes, not
+cropped anatomy, establish winding and topology.
+
+### Reproduce the Host Check
+
+From the extension checkout, with a fresh local host already running (replace
+the host path and port as needed):
+
+```sh
+COMFY_ROOT="/path/to/ComfyUI"
+"$COMFY_ROOT/.venv/bin/python" scripts/verify_mesh.py --host-root "$COMFY_ROOT" --server http://127.0.0.1:8189 --output artifacts/mesh-check
+```
+
+Use a new output directory for each run. The script performs a synthetic host
+adapter/export check, queues the example, downloads only the local exported GLB,
+compares binary geometry, and writes a report plus sample attribution. Use the
+existing public sample. This does not certify that a dataset lacks identifiers.
+
+### Manual Check Procedure
+
+Mesh acceptance is recorded above. The saved-workflow restart portion remains
+available as an additional manual check; do not infer that it was performed.
+
+1. Restart your own ComfyUI host to load the new Python node. Refresh the browser
+   and open `example_workflows/dicom_to_mesh.json` via Open or drag-and-drop.
+2. Run at 200 HU, step 2. Confirm that Save 3D Model shows a mesh, and rotate/zoom
+   it. Record any distortion, missing surfaces or errors. Threshold surfaces are
+   not segmentation; larger steps can omit thin structures, and scan boundaries
+   can leave open surfaces.
+3. Save the workflow, stop/relaunch your host, reopen it and run again. Record
+   whether the nodes, controls, preview and saved GLB still work.
+4. Explicitly accept or reject the mesh milestone. Automated checks above do
+   not replace these observations. Retain sample attribution with shared images.
+
+## Part One: Historical Evidence
+
+The following is the earlier loader record. Subsequently, the user reported
+that all four PNGs open; this does not establish acceptance of anatomy, geometry
+or image quality. Final visual/restart acceptance remains unrecorded.
+
 Status: offline tests, ComfyUI sample execution and volume verification passed.
 Peter reported successful verification and supplied a screenshot of the completed
 ComfyUI workflow on 2026-09-22, then requested a commit. PNG inspection, host

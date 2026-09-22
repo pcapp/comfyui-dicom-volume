@@ -1,5 +1,34 @@
 # Milestone Notes
 
+## Part Two: Volume to Mesh
+
+- Current implementation supersedes the earlier dependency and frontend notes:
+  scikit-image 0.26.0 is now a runtime requirement; the host frontend reports
+  1.53.6. The extension remains on its existing Python 3.14.2 environment and the
+  host on Python 3.13.13. Host installation was additive, with no host sync.
+- Inspected installed `nodes_hunyuan3d.py`, `nodes_load_3d.py`,
+  `geometry_types.py`, `_io.py` and `nodes_save_3d.py`. SaveGLB has moved to the
+  latter module. Its MESH uses batched tensors, preserves coordinates, and
+  returns a `3d` UI payload with no graph outputs. Preview3D accepts files/paths,
+  not MESH. The installed frontend's SaveGLB extension provides the preview.
+- Pure meshing lives in `meshing.py`; the small V3 adapter in `nodes.py` supplies
+  the host's `io.Mesh.Type`. Marching cubes operates on original HU values,
+  defaults to 200 HU and step 2, and excludes degenerate faces. Physical LPS mm
+  coordinates are transformed once, then rotated to `(-L,S,P)` and converted to
+  metres for glTF. No centering, normalization or custom viewer/exporter.
+- Right-hand face winding is corrected for the `(z,y,x)` permutation and any
+  reflected direction. Gradient normals use the inverse transpose. Closed
+  synthetic shapes verify orientation, anisotropy, origin, obliquity, physical
+  bounds and topology. The host smoke script also checks the actual GLB bytes.
+- Consulted current official [SaveGLB documentation](https://github.com/Comfy-Org/embedded-docs/blob/main/comfyui_embedded_docs/docs/SaveGLB/en.md),
+  [marching-cubes API](https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.marching_cubes),
+  [frontend SaveGLB source](https://github.com/Comfy-Org/ComfyUI_frontend/blob/main/src/extensions/core/saveMesh.ts)
+  and [glTF coordinate/unit specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#coordinate-system-and-units).
+  Installed code was the authority for this host's contracts.
+- See `VERIFICATION.md` for automated checks and the user's mesh acceptance.
+  User-observed saved-workflow restart remains unreported. Implementation made
+  no ComfyUI core edits or slice-viewer changes.
+
 ## API and Design
 
 - Inspected installed ComfyUI revision
