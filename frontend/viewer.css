@@ -1,0 +1,21 @@
+.dicom-viewer { box-sizing: border-box; width: 100%; height: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(150px, 1fr) auto auto; gap: 7px; padding: 8px; color: var(--input-text, #ddd); background: var(--comfy-menu-bg, #252525); font: 12px sans-serif; letter-spacing: 0; overflow: hidden; }
+.dicom-viewer * { box-sizing: border-box; min-width: 0; }
+.dicom-viewer .dv-row { display: flex; align-items: center; gap: 5px; }
+.dicom-viewer .dv-planes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+.dicom-viewer button, .dicom-viewer select, .dicom-viewer input[type=number] { color: inherit; background: var(--comfy-input-bg, #333); border: 1px solid var(--border-color, #666); border-radius: 3px; height: 27px; font: inherit; }
+.dicom-viewer button { cursor: pointer; padding: 3px 5px; }
+.dicom-viewer button[aria-pressed=true] { color: var(--comfy-menu-bg, #222); background: var(--input-text, #ddd); }
+.dicom-viewer button:focus-visible, .dicom-viewer input:focus-visible, .dicom-viewer select:focus-visible { outline: 2px solid var(--p-primary-color, #26a69a); outline-offset: 1px; }
+.dicom-viewer .dv-icon { flex: 0 0 27px; width: 27px; display: grid; place-items: center; }
+.dicom-viewer label { display: flex; align-items: center; gap: 4px; flex: 1; }
+.dicom-viewer input[type=number] { width: 100%; padding: 3px; }
+.dicom-viewer input[type=range] { flex: 1; width: 0; }
+.dicom-viewer select { width: 93px; }
+.dicom-viewer .dv-stage { position: relative; min-height: 150px; background: #080808; overflow: hidden; }
+.dicom-viewer canvas { position: absolute; width: 100%; height: 100%; display: block; touch-action: none; }
+.dicom-viewer .dv-status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; color: #eee; text-align: center; pointer-events: none; }
+.dicom-viewer .dv-status:empty { display: none; }
+.dicom-viewer .dv-orientation { font-size: 11px; overflow-wrap: anywhere; }
+.dicom-viewer .dv-count { flex: 0 0 72px; text-align: right; font-variant-numeric: tabular-nums; }
+.dicom-viewer .dv-hu { margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dicom-viewer .dv-summary { overflow: auto; max-height: 36px; font-size: 10px; overflow-wrap: anywhere; }

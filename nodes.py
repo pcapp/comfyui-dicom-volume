@@ -4,10 +4,12 @@ import logging
 
 import folder_paths
 import torch
-from comfy_api.latest import ComfyExtension, io, ui
+from comfy_api.latest import ComfyExtension, io
 
 from .loader import discover_directories, load_volume, manifest_fingerprint
 from .meshing import gltf_coordinates, volume_to_mesh
+from .slice_routes import registry
+from .slices import volume_descriptor
 
 
 class LoadDICOMVolume(io.ComfyNode):
@@ -25,14 +27,18 @@ class LoadDICOMVolume(io.ComfyNode):
 
     @classmethod
     def fingerprint_inputs(cls, directory):
-        return manifest_fingerprint(folder_paths.get_input_directory(), directory)
+        fingerprint = manifest_fingerprint(folder_paths.get_input_directory(), directory)
+        return fingerprint, registry.reserve(fingerprint)
 
     @classmethod
     def execute(cls, directory):
+        fingerprint = manifest_fingerprint(folder_paths.get_input_directory(), directory)
         volume = load_volume(folder_paths.get_input_directory(), directory)
         summary = volume.summary()
         logging.info("Load DICOM Volume: %s", summary)
-        return io.NodeOutput(volume, ui=ui.PreviewText(summary))
+        handle = registry.register(fingerprint, volume)
+        return io.NodeOutput(volume, ui={"text": [summary], "dicom_volume": [
+            volume_descriptor(volume, handle)]})
 
 
 class VolumeToMesh(io.ComfyNode):

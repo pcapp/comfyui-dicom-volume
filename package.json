@@ -1,0 +1,17 @@
+{
+  "name": "comfyui-dicom-volume-viewer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "lucide": "^0.468.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.4"
+  }
+}

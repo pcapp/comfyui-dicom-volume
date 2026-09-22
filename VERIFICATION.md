@@ -1,5 +1,96 @@
 # Manual Integration and Acceptance
 
+## Part Three: Slice Viewer Evidence, 2026-09-22
+
+Implementation and automated integration pass. The user supplied a screenshot of
+the working viewer and subsequently accepted Task 3 as a first pass, requesting
+a commit before further changes. This does not establish completion of every
+browser check below or explicit confirmation of the resize fix. Agent browser
+automation reports `ERR_BLOCKED_BY_CLIENT` for both `127.0.0.1:8189` and
+`localhost:8189`. The three-node example remains unchanged.
+
+| Check | Actual evidence |
+| --- | --- |
+| Python | 71 passed, including all 54 earlier tests, geometry/landmark/fractional-HU tests, registry bounds/expiry, and an actual aiohttp test server. Same 58 upstream scikit-image deprecation warnings. Endpoint test requires loopback socket permission. |
+| Frontend | `npm run typecheck`, `npm test`: 16 passed across pure logic and jsdom interaction tests; `npm run build` produces one 16.18 kB ES module. Canvas drawing is mocked in jsdom, so these are not visual tests. |
+| Host | Same revision `95539f56344958339e39b7582a476267d489b0ee`; Python 3.13.13, PyTorch 2.11.0, NumPy 2.4.4, aiohttp 3.13.5, frontend 1.53.6. No host dependency changes. |
+| Registration | Real `/extensions` advertises `/extensions/comfyui-dicom-volume/viewer.js`; fetched bundle matches the local build byte-for-byte. Public app/api shims and DOM-widget source maps inspected. |
+| Exact planes | Real queued sample: axial indices 0/74/147, coronal 0/256/511, sagittal 0/256/511 all byte-identical to pure extraction. Axial payloads 1,048,576 bytes; others 303,104 bytes. |
+| HTTP errors | Bad axis/index/query: 400; unknown and evicted handles: 410. Host rejects mismatched Origin with 403; no broad CORS added. Synthetic aiohttp tests also cover malformed handles and encoded path attempts. |
+| Cache recovery | Real graph exceeding eight registry entries evicts the sample handle. An ordinary unchanged sample graph run produces a new handle, and the following run caches normally. No graph-cache patch or dummy input. |
+| Multiple loaders/files | Two sample loaders share a usable source generation. Touching only a synthetic source file changes the fingerprint and refreshes its handle. |
+| Reconnected client | Real WebSocket client receives both `execution_cached` and `executed` with the sample descriptor on an unchanged graph. This exercises the installed host's UI replay, not a mocked event. |
+| Cold restart | Restarted only the isolated host. Prior report's handle returns 410; sample execution, exact planes, lifecycle checks and cached WebSocket replay pass again. Saved-workflow browser restart remains unverified. |
+| Mesh regression | Existing `verify_mesh.py` passes against the viewer-enabled host: 224,036 vertices, 447,879 triangles, 10,752,552-byte GLB; exact positions/indices, finite unit normals and established metre dimensions preserved. `cmp` also confirms a byte-identical GLB to Part Two's cold-restart artifact. |
+| Local evidence | Ignored `artifacts/slice-verification/check-2/report.json`, `check-3/report.json`, and `mesh/report.json`/`sample.glb`, with sample attribution. Initial incomplete attempts are not counted as passes. |
+
+Test input is an isolated local copy of the existing public sample plus nine tiny
+synthetic CT stacks. No data downloads occurred. Separate input/output/temp/user
+directories were used. The first launch unexpectedly triggered ComfyUI's legacy
+database migration; its original database was renamed back to its original path
+without replacing its inode or contents. Later launches used an explicit isolated
+`--database-url`. The existing port 8188 process was not stopped. Test hosts were
+stopped after verification. Host source and its pre-existing pyproject change
+were preserved; the Task 4 planning files were also preserved.
+
+### Reproduce Slice Integration
+
+From the extension checkout, first prepare a new ignored test input directory:
+
+```sh
+COMFY_ROOT="/path/to/ComfyUI"
+TEST_ROOT="$PWD/artifacts/slice-check"
+.venv/bin/python scripts/verify_slices.py --input "$TEST_ROOT/input" --prepare-from "$COMFY_ROOT/input/tcia-med-lymph-073"
+mkdir -p "$TEST_ROOT/output" "$TEST_ROOT/temp" "$TEST_ROOT/user"
+```
+
+With a free port and verified host interpreter, run a fresh isolated host:
+
+```sh
+"$COMFY_ROOT/.venv/bin/python" "$COMFY_ROOT/main.py" --cpu --disable-api-nodes --listen 127.0.0.1 --port 8189 \
+  --disable-all-custom-nodes --whitelist-custom-nodes comfyui-dicom-volume --disable-metadata \
+  --input-directory "$TEST_ROOT/input" --output-directory "$TEST_ROOT/output" \
+  --temp-directory "$TEST_ROOT/temp" --user-directory "$TEST_ROOT/user" \
+  --database-url "sqlite:///$TEST_ROOT/user/isolated.db"
+```
+
+In another terminal in the extension checkout, run:
+
+```sh
+.venv/bin/python scripts/verify_slices.py --input artifacts/slice-check/input --output artifacts/slice-check/check-1
+```
+
+Stop only that test host, relaunch it with the same command, and repeat with
+`--output artifacts/slice-check/check-2 --previous-report artifacts/slice-check/check-1/report.json`.
+The script queues graphs, checks exact bytes and WebSocket cache replay, exercises
+eviction, and touches only a prepared synthetic fixture. Stop the test host when
+finished. Use separate new output directories for subsequent runs.
+
+### Remaining Browser Checks
+
+Follow-up: a user screenshot shows the viewer rendering in the loader, but at a
+narrow width inside an enlarged node. The frontend now synchronizes widget width
+through the host's `afterResize` hook and explicitly fills its CSS container.
+C/W fields also have descriptive HU tooltips. Typecheck, all 16 frontend tests,
+and rebuild pass (16.41 kB bundle). The resized result still needs browser
+confirmation; the screenshot establishes initial rendering, not final acceptance.
+
+1. Restart your own host and refresh its page. Import the unchanged
+   `example_workflows/dicom_to_mesh.json`, then Run. Confirm the loader canvas,
+   summary, connections and core SaveGLB preview all appear.
+2. Inspect first/middle/last slices in all three stored planes. Scrub and rapidly
+   switch planes; confirm selection/readout agree. Resize the node and switch
+   host light/dark themes; check aspect, letterboxing and readable controls.
+3. Change C/W, presets and right/Shift-drag windowing. Check HU at the cursor and
+   its absence in the margins. With browser Network open, window changes should
+   issue no slice requests, and viewer controls should issue no `/prompt` requests.
+   Under throttling, the final selected plane must win over late responses.
+4. Add a second loader, run it, and delete it. Confirm the first remains usable.
+   Save a workflow with changed axis/index/window settings; refresh, reopen and
+   run. Repeat after a host restart. Confirm settings restore and pixels return.
+5. Record observed results and explicit acceptance or issues. These observations
+   are still needed; automated geometry and DOM checks do not replace them.
+
 ## Part Two: Mesh Evidence, 2026-09-22
 
 Automated mesh checks pass. The user supplied screenshots of the connected

@@ -8,3 +8,4 @@ artifacts/
 sample-data/
 *.dcm
 *.dicom
+node_modules/
