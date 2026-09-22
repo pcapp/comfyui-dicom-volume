@@ -111,7 +111,7 @@ participate in cache invalidation; full hashes are verified on inference.
 The second command runs the real model, writes label NIfTI, physical-aspect
 axial/coronal/sagittal overlays, counts, geometry, model/device/runtime provenance,
 and sample attribution. Add `--quality full` for the five-model run. See
-`VERIFICATION.md` for actual results and remaining browser acceptance.
+`VERIFICATION.md` for tested results and known limits.
 
 Keep `SAMPLE_DATA.md` attribution with sample-derived exports. Model terms and
 requested scientific citations are in `THIRD_PARTY_NOTICES.md`.

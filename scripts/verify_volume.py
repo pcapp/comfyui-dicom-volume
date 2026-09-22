@@ -69,7 +69,7 @@ def verify(input_root: Path, selection: str, output: Path):
                                           "max_absolute_error_hu": error},
         "images": images, "display": "Stored array axes; no anatomical labels. "
             "Nearest-neighbor display raster at square physical pixels. Linear window mapping.",
-        "human_acceptance": "PENDING: must be recorded separately from Peter's observations.",
+        "human_acceptance": "PENDING: record human observations separately.",
     }
     provenance = input_root / selection / "provenance.json"
     if provenance.exists():
@@ -86,7 +86,8 @@ def verify(input_root: Path, selection: str, output: Path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory")
-    parser.add_argument("--input-root", type=Path, default=Path("/Users/peter/repos/ComfyUI/input"))
+    parser.add_argument("--input-root", type=Path, required=True,
+                        help="ComfyUI input directory, e.g. /path/to/ComfyUI/input")
     parser.add_argument("--output", type=Path, default=Path("artifacts/sample-verification"))
     args = parser.parse_args()
     verify(args.input_root, args.directory, args.output)

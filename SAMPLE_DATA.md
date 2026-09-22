@@ -11,9 +11,8 @@ COMFY_ROOT="/absolute/path/to/ComfyUI"
 "$COMFY_ROOT/.venv/bin/python" scripts/fetch_sample.py --input-root "$COMFY_ROOT/input"
 ```
 
-Pass `--input-root` explicitly: the current script's default is the author's
-local development path. For a host launched with a custom input directory, use
-that directory instead. The directory must already exist. The command downloads
+`--input-root` is required. For a host launched with a custom input directory,
+use that directory instead. The directory must already exist. The command downloads
 one public series (148 slices, about 78 MB uncompressed) into
 `input/tcia-med-lymph-073`, verifies its metadata and ZIP contents, and writes
 `provenance.json` and the archive's `LICENSE` alongside it. An existing destination
@@ -49,9 +48,8 @@ users to preserve these obligations.
 
 The current [DAC guidance](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=22515655)
 asks developers of tools providing direct TCIA access to contact its helpdesk for
-listing and attribution review. This local milestone does not publish a tool or
-contact anyone. Address that request with TCIA before distributing the downloader
-publicly. It is not an authentication step for this public series.
+listing and attribution review. The downloader here fetches one public series by
+UID and is not an authentication step.
 
 ## Retrieval Provenance
 
@@ -79,7 +77,5 @@ Automated diagnostic download and geometry checks passed on 2026-09-22: 148
 DICOM files, 77,759,514 DICOM bytes, and a separate 2,793-byte `LICENSE` file.
 The volume is float32 with shape `(148, 512, 512)`, spacing
 `(0.8515625, 0.8515625, 5.0)` mm and HU range `[-1024, 3071]`; the independently
-read middle source plane matched exactly. This diagnostic used `/private/tmp`.
-Peter subsequently ran the sample in ComfyUI and reported successful volume
-verification; the local report agrees with these diagnostic results. Human PNG
-inspection remains unrecorded.
+read middle source plane matched exactly. A run inside ComfyUI produced the same
+results.

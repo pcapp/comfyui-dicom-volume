@@ -10,3 +10,4 @@ sample-data/
 *.dcm
 *.dicom
 node_modules/
+dev-notes/

@@ -77,7 +77,8 @@ def extract_series(archive: Path, destination: Path) -> list[dict]:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input-root", type=Path, default=Path("/Users/peter/repos/ComfyUI/input"))
+    parser.add_argument("--input-root", type=Path, required=True,
+                        help="ComfyUI input directory, e.g. /path/to/ComfyUI/input")
     args = parser.parse_args()
     root = args.input_root.resolve(strict=True)
     destination = root / "tcia-med-lymph-073"

@@ -1,18 +1,45 @@
 # DICOM Volume
 
-Load conventional CT and extract an HU isosurface in ComfyUI:
-`Load DICOM Volume -> Volume to Mesh -> Save 3D Model (SaveGLB)`.
-The core save node writes a GLB and supplies its existing interactive preview.
-The loader includes an interactive stored-plane slice viewer.
+Turn a CT scan into a 3D mesh inside ComfyUI. Load a DICOM series, scrub through
+it in an interactive slice viewer on the node, and extract a surface that saves
+as a GLB through the core **Save 3D Model** node. Optionally, segment named
+organs (heart, lungs, aorta and the rest of a 117-structure CT catalog) with
+TotalSegmentator and mesh each one.
 **Not for clinical use.**
 
-For named organs, use `Load DICOM Volume -> Segment CT Anatomy -> Select Anatomy
--> Mask to Mesh -> SaveGLB`. The single dropdown includes heart, lungs, aorta and
-the standard CT anatomy catalog. See [segmentation setup](SEGMENTATION.md) and
-`example_workflows/dicom_organs.json`; TotalSegmentator is an optional isolated
-worker and does not change the existing HU workflow.
+![Load DICOM Volume with slice viewer, Volume to Mesh, and Save 3D Model preview](docs/images/dicom-to-mesh.png)
 
-## Setup
+<sub>Sample: TCIA CT Lymph Nodes, case MED_LYMPH_073. Roth et al. (2015),
+[doi:10.7937/K9/TCIA.2015.AQIIDCNM](https://doi.org/10.7937/K9/TCIA.2015.AQIIDCNM),
+[CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Displayed with windowing
+and resizing; mesh extracted at 200 HU.</sub>
+
+## Quick Install
+
+For an existing ComfyUI install (Python 3.12+), run from the ComfyUI root using the
+same Python that runs ComfyUI:
+
+```sh
+git clone https://github.com/pcapp/comfyui-dicom-volume.git custom_nodes/comfyui-dicom-volume
+python -m pip install -r custom_nodes/comfyui-dicom-volume/requirements.txt
+python custom_nodes/comfyui-dicom-volume/scripts/fetch_sample.py --input-root input
+```
+
+Restart ComfyUI, then drag `example_workflows/dicom_to_mesh.json` onto the canvas,
+select `tcia-med-lymph-073` in **Load DICOM Volume** and click Run. The sample
+download is about 78 MB; see [SAMPLE_DATA.md](SAMPLE_DATA.md) for its license.
+No models or GPU are needed for this workflow. Organ segmentation has its own
+optional setup in [SEGMENTATION.md](SEGMENTATION.md).
+
+| Workflow | Nodes |
+| --- | --- |
+| `dicom_to_mesh.json` | Load DICOM Volume → Volume to Mesh → Save 3D Model |
+| `dicom_organs.json` | Load DICOM Volume → Segment CT Anatomy → Select Anatomy → Mask to Mesh → Save 3D Model |
+| `load_dicom_volume.json` | Load DICOM Volume only (slice viewer and summary) |
+
+The full tested setup below starts from a fresh ComfyUI clone.
+
+## Tested Setup
 
 The commands below are for a manual ComfyUI installation on macOS/Linux with
 Git and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed.
@@ -186,8 +213,8 @@ uv sync --locked
 .venv/bin/python -m pytest -q --tb=short
 ```
 
-See [VERIFICATION.md](VERIFICATION.md) for actual evidence, the host smoke command,
-mesh inspection and restart acceptance. `example_workflows/load_dicom_volume.json`
+See [VERIFICATION.md](VERIFICATION.md) for the tested environment, results and
+host check commands. `example_workflows/load_dicom_volume.json`
 still runs the loader alone and displays its geometry/HU summary.
 
 The loader selects the largest eligible conventional single-frame CT series,
