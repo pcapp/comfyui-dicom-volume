@@ -1,5 +1,19 @@
 [project]
 name = "dicom-volume"
 version = "0.1.0"
+description = "Load conventional CT DICOM series into ComfyUI volumes."
+readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["numpy>=2.2", "SimpleITK>=2.5"]
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "--import-mode=importlib"
+
+[tool.comfy]
+DisplayName = "DICOM Volume"

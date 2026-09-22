@@ -1,0 +1,11 @@
+{
+  "1": {
+    "class_type": "DICOMVolume_Load",
+    "inputs": {
+      "directory": "tcia-med-lymph-073"
+    },
+    "_meta": {
+      "title": "Load DICOM Volume"
+    }
+  }
+}
