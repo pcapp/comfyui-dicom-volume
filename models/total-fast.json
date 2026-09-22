@@ -1,0 +1,14 @@
+{
+  "version": "2.18.0",
+  "task": "total",
+  "quality": "fast",
+  "license": "Apache-2.0",
+  "sources": {
+    "297": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset297_TotalSegmentator_total_3mm_1559subj.zip"
+  },
+  "files": {
+    "Dataset297_TotalSegmentator_total_3mm_1559subj/nnUNetTrainer_4000epochs_NoMirroring__nnUNetPlans__3d_fullres/dataset.json": "e804e08ad8912e3a6f541741c8c78799d75acbd3f4f3f18ff5f211bbd3da961a",
+    "Dataset297_TotalSegmentator_total_3mm_1559subj/nnUNetTrainer_4000epochs_NoMirroring__nnUNetPlans__3d_fullres/plans.json": "d1cb3c15f53dc36fdb618e0f9082573d1f50b74a9b5fa73094ac8680845839f1",
+    "Dataset297_TotalSegmentator_total_3mm_1559subj/nnUNetTrainer_4000epochs_NoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "1e38e40356adc2706a662e365405a97f862d62a7da65f6bf81d025aee1b979ac"
+  }
+}

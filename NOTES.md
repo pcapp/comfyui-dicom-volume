@@ -1,5 +1,26 @@
 # Milestone Notes
 
+## Task 4: Implementation Update, 2026-09-22
+
+Implemented the plan below using an isolated TotalSegmentator 2.18.0 worker,
+three V3 nodes, a single organ/group dropdown, and the existing core mesh exporter.
+Both full and fast standard CT models are installed locally and hash-pinned.
+93 tests pass; real MPS inference, queued GLB exports, cache reuse, cold restart,
+cancellation and Chrome dropdown/preview interaction were checked. See
+[setup and usage](SEGMENTATION.md) and [actual evidence and limits](VERIFICATION.md).
+Peter explicitly accepted Step 4 and requested its commit on 2026-09-22.
+Finer-grained segmentation is deferred to a future pass. Incremental inference
+percentage reporting is also a known follow-up; the current node can show 0%
+until inference finishes. The earlier planning note is retained as history.
+
+## Task 4: Organ Segmentation (Planned)
+
+Peter requested TotalSegmentator-based selection and meshing of specific organs.
+The [Task 4 execution plan](TASK_4_SEGMENTATION_PLAN.md) is the handoff for Astra6.
+It covers optional model setup, standard-task licensing, geometry preservation,
+reusable organ selection, mask meshing, and real-host verification. Implementation
+has not started; earlier milestone acceptance remains independently recorded.
+
 ## Part Two: Volume to Mesh
 
 - Current implementation supersedes the earlier dependency and frontend notes:

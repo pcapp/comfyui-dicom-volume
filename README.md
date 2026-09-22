@@ -6,6 +6,12 @@ The core save node writes a GLB and supplies its existing interactive preview.
 The loader includes an interactive stored-plane slice viewer.
 **Not for clinical use.**
 
+For named organs, use `Load DICOM Volume -> Segment CT Anatomy -> Select Anatomy
+-> Mask to Mesh -> SaveGLB`. The single dropdown includes heart, lungs, aorta and
+the standard CT anatomy catalog. See [segmentation setup](SEGMENTATION.md) and
+`example_workflows/dicom_organs.json`; TotalSegmentator is an optional isolated
+worker and does not change the existing HU workflow.
+
 ## Setup
 
 Use an existing ComfyUI checkout and its verified interpreter. Preserve local

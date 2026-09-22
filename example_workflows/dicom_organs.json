@@ -1,0 +1,109 @@
+{
+  "1": {
+    "class_type": "DICOMVolume_Load",
+    "inputs": {
+      "directory": "tcia-med-lymph-073"
+    }
+  },
+  "2": {
+    "class_type": "DICOMVolume_SegmentAnatomy",
+    "inputs": {
+      "volume": [
+        "1",
+        0
+      ],
+      "quality": "fast (3 mm)",
+      "device": "auto"
+    }
+  },
+  "3": {
+    "class_type": "DICOMVolume_SelectAnatomy",
+    "inputs": {
+      "segmentation": [
+        "2",
+        0
+      ],
+      "anatomy": "heart"
+    }
+  },
+  "4": {
+    "class_type": "DICOMVolume_MaskToMesh",
+    "inputs": {
+      "mask": [
+        "3",
+        0
+      ],
+      "step_size": 1
+    }
+  },
+  "5": {
+    "class_type": "SaveGLB",
+    "inputs": {
+      "mesh": [
+        "4",
+        0
+      ],
+      "filename_prefix": "dicom/heart"
+    }
+  },
+  "6": {
+    "class_type": "DICOMVolume_SelectAnatomy",
+    "inputs": {
+      "segmentation": [
+        "2",
+        0
+      ],
+      "anatomy": "both lungs"
+    }
+  },
+  "7": {
+    "class_type": "DICOMVolume_MaskToMesh",
+    "inputs": {
+      "mask": [
+        "6",
+        0
+      ],
+      "step_size": 1
+    }
+  },
+  "8": {
+    "class_type": "SaveGLB",
+    "inputs": {
+      "mesh": [
+        "7",
+        0
+      ],
+      "filename_prefix": "dicom/both_lungs"
+    }
+  },
+  "9": {
+    "class_type": "DICOMVolume_SelectAnatomy",
+    "inputs": {
+      "segmentation": [
+        "2",
+        0
+      ],
+      "anatomy": "aorta"
+    }
+  },
+  "10": {
+    "class_type": "DICOMVolume_MaskToMesh",
+    "inputs": {
+      "mask": [
+        "9",
+        0
+      ],
+      "step_size": 1
+    }
+  },
+  "11": {
+    "class_type": "SaveGLB",
+    "inputs": {
+      "mesh": [
+        "10",
+        0
+      ],
+      "filename_prefix": "dicom/aorta"
+    }
+  }
+}

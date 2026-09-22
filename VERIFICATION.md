@@ -1,5 +1,50 @@
 # Manual Integration and Acceptance
 
+## Task Four: Organ Segmentation, 2026-09-22
+
+Implemented optional TotalSegmentator 2.18.0 standard CT `total`, with separate
+inference, single-dropdown anatomy selection, and mask-meshing V3 nodes.
+Existing loader/HU behavior and the user's pre-existing NOTES/plan work were
+preserved. No ComfyUI core/package changes or publishing occurred during
+implementation. Peter explicitly accepted Step 4 on 2026-09-22 and authorized
+its commit, deferring finer-grained segmentation to a later pass.
+
+| Check | Actual evidence |
+| --- | --- |
+| Offline regression | 93 passed, 63 upstream scikit-image/NumPy deprecation warnings. Includes 22 new tests: independent NIfTI RAS landmarks, anisotropic/oblique/reflected geometry, nearest-neighbor restoration including same-shape changed-affine predictions, invalid labels, exact groups, empty anatomy, boundary padding at steps 1/2/3, winding/normals, disconnected components, cache identity, corrupt manifests, offline guard, and subprocess cancellation. |
+| Environments | Extension Python 3.14.2 unchanged. Isolated worker Python 3.12.12: TotalSegmentator 2.18.0, torch 2.14.0, nnunetv2 2.8.1, NumPy 2.5.3, nibabel 5.4.2, SimpleITK 2.5.6. Complete macOS arm64 snapshot in requirements-segmentation-macos.lock.txt. Host retains Python 3.13.13 / torch 2.11.0. |
+| Models | Standard tasks 291-295 (full, 1.5 mm) and 297 (fast, 3 mm) explicitly downloaded. Source URLs, all checkpoint/plans/dataset SHA-256 hashes and Apache-2.0 terms recorded in models/total-{full,fast}.json. Setup and inference verify pinned hashes. |
+| Real sample | Both qualities ran on MPS, returned (148,512,512) labels on the original 0.8515625 x 0.8515625 x 5 mm LPS grid, and preserved original HU. Fast: heart 215,757 voxels, both lungs 1,576,884, aorta 70,065. Full: 228,243 / 1,582,738 / 70,130 respectively. None of these masks touched the scan boundary. |
+| Runtime/memory | Fast worker inference 33.04 s initially and 14.86 s on a later run; full 126.28 s. Final fast worker peak resident memory 8,672,624,640 bytes (about 8.08 GiB), excluding child-process/host memory; not a VRAM measurement. Timing includes backend processing but excludes host serialization and mesh export. |
+| Geometry/export | Queued example produced heart/lungs/aorta GLBs with exact position/index agreement against separately computed meshes, finite unit normals and physical metre coordinates. Fast meshes: 62,220 / 240,968 / 28,628 vertices; 124,448 / 482,056 / 57,252 triangles. |
+| Cache | Heart-to-left-lung selection reused inference node 2 and untouched branches. Total queue round trip 0.69 s initially, 0.62 s after restart. Changing quality to full ran node 2 again (then deliberately cancelled). Model-file mutation invalidation is covered offline. |
+| Cold restart/offline | Isolated host on 8189 restarted with final code; queued sample/export comparisons passed again in 22.57 s. Worker blocks external socket connections, including in spawned Python processes; weights were already installed, and telemetry disabled. The whole computer's network was not disabled. |
+| Failure/cancellation | Actual full-quality host inference interrupted at node 2; history reported execution_interrupted within 516 ms of interrupt request. No segmentation/spawn workers remained afterwards. Explicit CUDA on this Mac returned the expected unavailable-device error. Missing/corrupt models, absent structures and bounded diagnostics are covered offline. |
+| Visual inspection | Agent inspected axial/coronal/sagittal overlays for both qualities: alignment is visually plausible. Chrome/Playwright loaded the actual 11-node API example, executed it, and rendered the core heart/lung/aorta previews. Pointer rotation/zoom changed the heart view. Native dropdown selection changed heart to left lung and reran successfully. The core aorta preview's initial framing clips the upper arch; zoom works, but default framing remains a host-viewer limitation. No custom viewer changes. |
+
+Evidence is ignored under `artifacts/segmentation-check/{fast,full,final-fast}`
+(labels, overlays, full label counts, model/device/runtime reports and attribution)
+and `artifacts/segmentation-host/{check,cold-restart}` (GLBs, exact comparisons,
+cache reports and attribution). Browser screenshots and failure/cancellation
+reports are in `artifacts/segmentation-host`. The first sandboxed inference
+attempt failed because nnU-Net could not create its local multiprocessing socket;
+the real runs used local IPC permission. The first sandboxed regression attempt
+likewise failed only on the existing HTTP test's bind permission; the permitted
+rerun passed. Neither failed attempt is counted as a successful integration.
+
+Limits: no established organ ground truth or numerical accuracy claim. Peter's
+acceptance covers Step 4 as implemented. The sample's 5 mm slice spacing produces visible
+steps; no smoothing hides them. CUDA, Windows process-tree cancellation and
+end-to-end CPU inference were not verified on this Mac. User-observed workflow
+save/reopen acceptance remains pending. The independent existing host on 8188
+was not stopped; isolated test hosts were stopped after verification.
+Incremental inference percentage reporting is not implemented: the active
+segmentation node can display 0% until it completes.
+
+Reproduce backend and host checks using `scripts/verify_segmentation.py` and
+`scripts/verify_segmentation_host.py`; see `SEGMENTATION.md` for setup. The host
+check takes `--input-root`, `--labels` from the real fast run, and `--output`.
+
 ## Part Three: Slice Viewer Evidence, 2026-09-22
 
 Implementation and automated integration pass. The user supplied a screenshot of

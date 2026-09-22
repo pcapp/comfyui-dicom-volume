@@ -51,3 +51,25 @@ def gltf_coordinates(vertices, normals):
     rotation = np.array([[-1, 0, 0], [0, 0, 1], [0, 1, 0]], dtype=np.float32)
     return (np.ascontiguousarray((vertices @ rotation.T) * np.float32(0.001)),
             np.ascontiguousarray(normals @ rotation.T))
+
+
+def mask_to_mesh(volume_mask, step_size=1):
+    """Pad binary anatomy to close the surface, retaining the source coordinates."""
+    from types import SimpleNamespace
+
+    if isinstance(step_size, bool) or not isinstance(step_size, Integral) or step_size < 1:
+        raise ValueError("step_size must be an integer of at least 1.")
+    mask = volume_mask.mask
+    if mask.dtype != np.bool_ or mask.ndim != 3 or tuple(mask.shape) != volume_mask.grid.shape:
+        raise ValueError("Expected a boolean mask on the original volume grid.")
+    if not mask.any():
+        raise ValueError("No surface: selected anatomy is absent from this scan.")
+    grid = volume_mask.grid
+    direction = np.asarray(grid.direction).reshape(3, 3)
+    if step_size > min(mask.shape):
+        raise ValueError("Reduce step_size to the smallest mask dimension or less.")
+    # A full sampling stride of zeros closes all six boundaries even at coarse steps.
+    padded = SimpleNamespace(voxels=np.pad(mask.astype(np.float32), step_size),
+                             spacing=grid.spacing, direction=grid.direction,
+                             origin=np.asarray(grid.origin) - direction @ (np.asarray(grid.spacing) * step_size))
+    return volume_to_mesh(padded, threshold_hu=0.5, step_size=step_size)

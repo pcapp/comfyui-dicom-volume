@@ -1,0 +1,30 @@
+{
+  "version": "2.18.0",
+  "task": "total",
+  "quality": "full",
+  "license": "Apache-2.0",
+  "sources": {
+    "291": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset291_TotalSegmentator_part1_organs_1559subj.zip",
+    "292": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset292_TotalSegmentator_part2_vertebrae_1532subj.zip",
+    "293": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset293_TotalSegmentator_part3_cardiac_1559subj.zip",
+    "294": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset294_TotalSegmentator_part4_muscles_1559subj.zip",
+    "295": "https://github.com/wasserth/TotalSegmentator/releases/download/v2.0.0-weights/Dataset295_TotalSegmentator_part5_ribs_1559subj.zip"
+  },
+  "files": {
+    "Dataset291_TotalSegmentator_part1_organs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/dataset.json": "09089590277fe1e62e73857145617c2392f449fe98a6c752a67aa6dc2023b1e2",
+    "Dataset291_TotalSegmentator_part1_organs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/plans.json": "d77d815eb2bd11ec79b623161561dab4cef3def17dec0a0fe0f8d8dee3a761d5",
+    "Dataset291_TotalSegmentator_part1_organs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "98c429f89fd9b3b08890fbb2b4c08c365ad4655fdcadb45efaa29380129fd890",
+    "Dataset292_TotalSegmentator_part2_vertebrae_1532subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/dataset.json": "5c967bfe82c846a6491473706e3c5d322f470ed4fce2eb5047a22c702ae64c79",
+    "Dataset292_TotalSegmentator_part2_vertebrae_1532subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/plans.json": "72fcde2fa59183f65b92fc86a12467acd81511d93d8d2577608550ad0c1938cd",
+    "Dataset292_TotalSegmentator_part2_vertebrae_1532subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "7022f71829ef00aa14d790a7667bc18eb1691f2fe5b0a38c475862abc84c2457",
+    "Dataset293_TotalSegmentator_part3_cardiac_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/dataset.json": "ac8ee8e6d0040938a0e621b025fddd9fb82d15842b427ef1e590e84c6bb390c5",
+    "Dataset293_TotalSegmentator_part3_cardiac_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/plans.json": "a048b27bfe30ca72a7a76f16cc5145ecc15f28911c6897793b93e6bea4b0e4a3",
+    "Dataset293_TotalSegmentator_part3_cardiac_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "189010ac67fec3f1704df7547306d0067eabaaf620e0a46a1bdd183afa0800e4",
+    "Dataset294_TotalSegmentator_part4_muscles_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/dataset.json": "3c0002bc06677197f1597a5143ccfebd556508563edd9282a46f057d5a0d5965",
+    "Dataset294_TotalSegmentator_part4_muscles_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/plans.json": "63c9175c2f3fdff5e67ae55ea56250fb44ba53034335f1781081da9b9bdea709",
+    "Dataset294_TotalSegmentator_part4_muscles_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "655eb40de03aa3de7348b69d7569a1cc3a2dc7969a11c0d60a7331e07df11c28",
+    "Dataset295_TotalSegmentator_part5_ribs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/dataset.json": "71228770dbcb9d303e6943dd1017b19346857b3fbc30e912dba30a704d1ac8f6",
+    "Dataset295_TotalSegmentator_part5_ribs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/plans.json": "241fa585e763462a7f4ab593d34e466a58cbce17c87b64d260a7ee5010416132",
+    "Dataset295_TotalSegmentator_part5_ribs_1559subj/nnUNetTrainerNoMirroring__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth": "a674364c60b304fbd56feccdd95f8d0fe0c45a5bfa1ef25815516e4dde04d3fc"
+  }
+}

@@ -1,0 +1,7 @@
+# Install only in a separate Python 3.12 worker; never sync the ComfyUI environment.
+TotalSegmentator==2.18.0
+torch==2.14.0
+nnunetv2==2.8.1
+numpy==2.5.3
+nibabel==5.4.2
+SimpleITK==2.5.6
