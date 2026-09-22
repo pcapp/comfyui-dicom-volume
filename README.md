@@ -14,13 +14,44 @@ worker and does not change the existing HU workflow.
 
 ## Setup
 
-Use an existing ComfyUI checkout and its verified interpreter. Preserve local
-changes; no host upgrade or environment replacement is required. From this
-extension checkout:
+The commands below are for a manual ComfyUI installation on macOS/Linux with
+Git and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed.
+The clean-install check used ComfyUI 0.37.0 with frontend 1.53.6 on Apple Silicon,
+Python 3.13 for ComfyUI, and Python 3.12 for the optional segmentation worker.
+Older host versions are not covered by that check. Windows portable/Desktop installs
+have different interpreter paths; these shell commands do not cover them.
+
+### Get ComfyUI and This Extension
+
+If you already have a working ComfyUI checkout, keep its environment and skip
+the host installation commands. Otherwise, in a directory of your choice:
+
+```sh
+git clone https://github.com/Comfy-Org/ComfyUI.git
+cd ComfyUI
+uv venv --python 3.13 .venv
+uv pip install --python .venv/bin/python -r requirements.txt
+cd ..
+```
+
+This is the CPU-capable host setup tested on Apple Silicon. For other hardware
+or GPU acceleration in ComfyUI itself, follow the
+[official manual installation guide](https://docs.comfy.org/installation/manual_install).
+The optional segmentation worker chooses its own device independently.
+
+Clone the extension next to your ComfyUI checkout:
+
+```sh
+git clone --branch main https://github.com/pcapp/comfyui-dicom-volume.git
+cd comfyui-dicom-volume
+```
+
+Preserve local changes and use your host's own interpreter. From this extension
+checkout, set the paths (replace `COMFY_ROOT` if your host lives elsewhere):
 
 ```sh
 EXTENSION_ROOT="$PWD"
-COMFY_ROOT="/path/to/ComfyUI"
+COMFY_ROOT="$(cd ../ComfyUI && pwd)"
 git status --short --branch
 git -C "$COMFY_ROOT" status --short --branch
 "$COMFY_ROOT/.venv/bin/python" -c 'import sys; print(sys.executable, sys.version)'
@@ -51,9 +82,11 @@ Do not stop an unrelated process. Open the URL printed by the host.
 ## Run the Workflow
 
 1. Read [SAMPLE_DATA.md](SAMPLE_DATA.md) for the public sample, its explicit
-   downloader, TCIA citation, CC BY 3.0 license and usage policy. Put a supported
-   series beneath the host's input directory; refresh the browser after adding
-   folders. The nodes never download data.
+   downloader command, TCIA citation, CC BY 3.0 license and usage policy. Download
+   that sample, or put your own supported series beneath the host's input
+   directory; refresh the browser after adding folders. The nodes never download
+   data. Run the sample command from the extension directory, not the host
+   directory used to start ComfyUI.
 2. Open or drag `example_workflows/dicom_to_mesh.json` onto the ComfyUI canvas.
    This is API-format JSON supported by the installed frontend. Select the
    input folder in `Load DICOM Volume`; the example uses `tcia-med-lymph-073`.

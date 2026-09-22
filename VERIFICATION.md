@@ -1,5 +1,46 @@
 # Manual Integration and Acceptance
 
+## Clean Third-Party Onboarding, 2026-09-22
+
+Tested public `main` at `8258b3a` in a fresh HTTPS clone, alongside a fresh
+upstream ComfyUI clone at `95539f56344958339e39b7582a476267d489b0ee` (0.37.0,
+frontend 1.53.6). The test used a new Python 3.13.13 host environment, a new
+Python 3.12.12 segmentation worker, a newly downloaded TCIA sample, empty model
+caches, and a fresh automated Chrome profile on Apple Silicon. Package-manager
+download caches were allowed; no existing host environment, sample, installed
+extension or model directory was linked into the test. Host PyTorch resolved
+to 2.14.0. The tested remote code was not modified.
+
+The original instructions were incomplete for a newcomer: no clone/host setup
+commands, no executable sample-download example, and an implicit change of
+working directory between host startup and extension setup. The sample script
+also defaults to the author's local input path. README, SAMPLE_DATA and
+SEGMENTATION now document the explicit paths and commands used by this check;
+the script's default itself is unchanged.
+
+| Check | Actual evidence |
+| --- | --- |
+| Host and extension install | Upstream requirements installed into a new host venv; extension symlink and requirements installed as documented. Host started with `--cpu --disable-api-nodes --listen 127.0.0.1 --port 8197`. No Node build was required. |
+| Sample download | Ran `scripts/fetch_sample.py --input-root <fresh-host>/input` with the host interpreter. Metadata/ZIP verification passed for 148 slices and 77,759,514 DICOM bytes; attribution/provenance retained. |
+| HU mesh | `scripts/verify_mesh.py` passed against the new host. Export: 224,036 vertices, 447,879 triangles, exact positions/indices and finite unit normals. GLB was 10,753,200 bytes with newly resolved dependencies; geometry remained correct. |
+| Browser import/viewer | Imported the shipped API JSON through the actual file input and clicked Run. Axial, coronal and sagittal controls rendered nonblank images (over 250 grayscale values each); changing window width changed pixels. Core 3D preview rendered. No browser JavaScript errors. |
+| Worker/model setup | Installed the short pinned `requirements-segmentation.txt` into the fresh Python 3.12 worker. Downloaded both fast and all five full model checkpoints into the new cache; all pinned hashes passed. |
+| Fast organ workflow | Imported the organ JSON through the browser file input and clicked Run. MPS inference and heart/both-lungs/aorta GLB exports succeeded. First worker inference: 116.4 seconds; server workflow: 121.76 seconds. Earlier 15-33 second measurements are not a first-run guarantee. |
+| Cache and preview interaction | Changed heart to left lung using the native dropdown. History confirmed inference node 2 and unaffected branches were cached; server execution took 0.416 seconds. Pointer rotation/zoom changed the core lungs preview. |
+| Full organ workflow | Selected full quality through the native dropdown. MPS worker inference took 123.1 seconds; server workflow took 129.09 seconds. All three branches exported and the core lungs preview rendered. No browser JavaScript errors. |
+| Cold restart/reopen | Serialized the browser graph to a JSON file, stopped only the disposable host, restarted it with the same documented command, and imported the saved file through the browser file input. All 11 nodes and the left-lung selection were preserved. Run succeeded in 20.676 seconds with an empty execution cache and no browser JavaScript errors. This tests graph serialization/file import, not the Save dialog. |
+
+Evidence is under ignored `artifacts/onboarding/` (browser scripts, screenshots,
+JSON histories and attribution). The disposable checkout and host are under
+`/private/tmp/comfy-onboarding-yeJVeq`; its `extension/artifacts/onboarding-mesh`
+contains the binary geometry report. These are automated onboarding observations,
+not new user acceptance or medical validation. Windows/Desktop/portable, Linux,
+CUDA and end-to-end CPU segmentation were not tested by this pass. The source
+sample still has 5 mm slice spacing, and the native preview can require zooming
+out to see the whole mesh. No inference-progress feature was added.
+The disposable host was stopped after verification; the existing installation
+was not modified or stopped.
+
 ## Task Four: Organ Segmentation, 2026-09-22
 
 Implemented optional TotalSegmentator 2.18.0 standard CT `total`, with separate

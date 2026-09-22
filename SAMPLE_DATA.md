@@ -1,5 +1,30 @@
 # Sample Data Attribution
 
+## Download the Example Series
+
+After completing the extension's dependency installation in [README.md](README.md),
+open another terminal in the extension checkout. Set the absolute path to your
+ComfyUI checkout, then run:
+
+```sh
+COMFY_ROOT="/absolute/path/to/ComfyUI"
+"$COMFY_ROOT/.venv/bin/python" scripts/fetch_sample.py --input-root "$COMFY_ROOT/input"
+```
+
+Pass `--input-root` explicitly: the current script's default is the author's
+local development path. For a host launched with a custom input directory, use
+that directory instead. The directory must already exist. The command downloads
+one public series (148 slices, about 78 MB uncompressed) into
+`input/tcia-med-lymph-073`, verifies its metadata and ZIP contents, and writes
+`provenance.json` and the archive's `LICENSE` alongside it. An existing destination
+is never overwritten. Refresh ComfyUI after the download, then open the example
+workflow and select `tcia-med-lymph-073`.
+
+The sample is optional if you already have supported conventional CT data.
+Retain the attribution and usage terms below with sample-derived output.
+
+## Attribution and Terms
+
 Source: [TCIA CT Lymph Nodes](https://www.cancerimagingarchive.net/collection/ct-lymph-nodes/).
 Public de-identified case: `MED_LYMPH_073`.
 SeriesInstanceUID: `61.7.338133024060269626651520600539598241004`.

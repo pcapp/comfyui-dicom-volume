@@ -9,6 +9,10 @@ No custom frontend or multi-select is needed.
 
 ## Optional Setup
 
+First complete the [base installation and sample download](README.md#setup).
+Open another terminal and `cd` into the extension checkout before running these
+commands; the terminal running ComfyUI remains in the host checkout.
+
 The loader and HU meshing need no segmentation packages. TotalSegmentator runs
 in an isolated Python 3.12 worker, leaving the host interpreter and packages alone.
 From this extension directory, with uv installed:
@@ -47,6 +51,11 @@ supported but can be slow. The worker logs its resolved device and elapsed time
 in the inference provenance; the host logs the result. ComfyUI cancellation
 terminates the worker process group on macOS/Linux, releasing accelerator memory.
 Windows terminates the main worker only; process-tree cancellation is not verified.
+
+Allow several minutes for a first run. The clean-install fast-mode check took
+about 122 seconds end to end on Apple Silicon (116 seconds in the worker),
+although earlier runs on the same sample were faster. The node can remain at
+0% until inference completes; that alone does not indicate a stalled process.
 
 ## Quality and Geometry
 
