@@ -25,6 +25,9 @@ python -m pip install -r custom_nodes/comfyui-dicom-volume/requirements.txt
 python custom_nodes/comfyui-dicom-volume/scripts/fetch_sample.py --input-root input
 ```
 
+If ComfyUI's environment was created with `uv venv`, it has no pip; install the
+requirements with `uv pip install --python .venv/bin/python -r custom_nodes/comfyui-dicom-volume/requirements.txt` instead.
+
 Restart ComfyUI, then drag `example_workflows/dicom_to_mesh.json` onto the canvas,
 select `tcia-med-lymph-073` in **Load DICOM Volume** and click Run. The sample
 download is about 78 MB; see [SAMPLE_DATA.md](SAMPLE_DATA.md) for its license.
