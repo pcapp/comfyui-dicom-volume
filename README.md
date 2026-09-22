@@ -7,12 +7,12 @@ organs (heart, lungs, aorta and the rest of a 117-structure CT catalog) with
 TotalSegmentator and mesh each one.
 **Not for clinical use.**
 
-![Load DICOM Volume with slice viewer, Volume to Mesh, and Save 3D Model preview](docs/images/dicom-to-mesh.png)
+![Scrubbing CT slices in Load DICOM Volume beside the organ segmentation graph and a lung mesh preview](docs/images/dicom-organs-demo.gif)
 
 <sub>Sample: TCIA CT Lymph Nodes, case MED_LYMPH_073. Roth et al. (2015),
 [doi:10.7937/K9/TCIA.2015.AQIIDCNM](https://doi.org/10.7937/K9/TCIA.2015.AQIIDCNM),
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Displayed with windowing
-and resizing; mesh extracted at 200 HU.</sub>
+and resizing; recording sped up 1.6x.</sub>
 
 ## Quick Install
 
@@ -107,6 +107,8 @@ cd "$COMFY_ROOT"
 Do not stop an unrelated process. Open the URL printed by the host.
 
 ## Run the Workflow
+
+![Load DICOM Volume with slice viewer, Volume to Mesh, and Save 3D Model preview](docs/images/dicom-to-mesh.png)
 
 1. Read [SAMPLE_DATA.md](SAMPLE_DATA.md) for the public sample, its explicit
    downloader command, TCIA citation, CC BY 3.0 license and usage policy. Download
